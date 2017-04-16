@@ -1,3 +1,18 @@
+body {
+  background-color: #9FB6CD ;
+  }
+
+/*.container {
+    position: absolute;
+    border-right: 3px solid red;
+    top: 0;
+    bottom: 0;
+ }
+*/
+ .navbar-default {
+    background-color: white;
+   }
+
 .comment-body,
 .post-text {
     font-size: 24px;
@@ -8,3 +23,4 @@
 .glyphicon-thumbs-up {
     cursor: pointer;
 }
+

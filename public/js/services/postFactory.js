@@ -1,7 +1,6 @@
 app.factory('postFactory', function($http) {
 
   const postFactory = {};
-   postFactory.posts = [];
 
   postFactory.addPost = function(newPost) {//add the post
     return $http.post('/reddit',newPost)
@@ -12,10 +11,19 @@ app.factory('postFactory', function($http) {
       });
   };
 
+   postFactory.addComment = function (newComment, postId) {//add the comment
+             return $http.post('/reddit/'+ postId + '/comment', newComment)
+            .then(function (response) {
+                return response.data;
+            }, function (err) {
+                console.error(err)
+            })
+    };
+
   return postFactory;
 });
 
-   //todo
+
     //add post
     //up/down vote post
     //add comment (to post)

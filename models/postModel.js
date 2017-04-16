@@ -14,7 +14,7 @@ let postSchema = new Schema({
     text: {type: String},
     author: {type: String},
     upvotes: {type: Number},
-    comments: [{type: Schema.Types.ObjectId, ref: 'comment'}]
+    comments: [{type: Schema.Types.ObjectId, ref: 'comment'}]//note the population
 });
 
 //

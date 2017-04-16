@@ -1,3 +1,13 @@
-app.controller('NavCtrl', function() {
-  //todo - you may find it useful to use this controller for the navbar functionality
+app.controller('navController', function($scope, authFactory) {
+  $scope.currentUser = authFactory.currentUser;
+  $scope.getCurrentUser = authFactory.getCurrentUser;
+  $scope.logout = authFactory.logout;
+   
+  // $scope.logout = function() {
+  //   authFactory.logout().then(function(){
+  //     if( no user ) {
+  //       state.go('home');
+  //     }
+  //   })
+  // } 
 });

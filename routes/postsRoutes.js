@@ -41,37 +41,38 @@ router.post('/', function(req, res, next) {//create the posts
 });
 
 router.put('/:postid', function(req, res, next) {//update/edit the posts
-  Post.findByIdAndUpdate({ _id: req.params.id }, req.body, function(err, beer) {
+  Post.findByIdAndUpdate({ _id: req.params.id }, req.body, function(err, post) {
     if (err) {
       console.error(err)
       return next(err);
     } else {
-      res.send(beer);
+      res.send(post);
     }
   });
 });
 
-router.post('/:postid/comments', function(req, res, next) {//update the comments
-  Post.findById(req.params.id, function(err, foundPost) {
-    if (err) {
-      console.error(err);
-      return next(err);
-    } else if (!foundPost) {
-      return res.send("Error! No post found with that ID");
-    } else {
-      foundPost.reviews.push(req.body)
-      foundPost.save(function(err, updatedPost) {
+router.put('/posts/:postid/upvote', function(req, res) {
+  req.post.upvote();
+  req.post.save(function(err, post) {
+    res.send(post);
+  });
+});
+
+router.get('/:postid2', function (req, res, next) {
+    Post.findOne({_id: req.params.postid2}).populate('comments')
+        .exec(function (err, post) {
         if (err) {
-          return next(err);
-        } else {
-          res.send(updatedBeer);
+            return next(err);
         }
-      });
-    }
+          else {
+            console.log("the population stuff");
+            console.log(post);
+            res.send(post);
+        }
+    })
   });
-});
 
-router.delete('/:postid', function(req, res, next) {//delete the posts
+router.delete('/:postid', function(req, res, next) {//this is from the database
   req.post.remove(function(err, result) {
     if (err) {
       return next(err);
@@ -79,6 +80,26 @@ router.delete('/:postid', function(req, res, next) {//delete the posts
       return res.send(result);
     }
   });
+});
+
+router.post('/:postid/comment', function (req, res, next) {
+    let newComment = new Comment(req.body);
+    // newComment.post = req.post._id;
+    // console.log(newComment);
+    newComment.save(function (err, commentWithId) {
+        if (err) {
+            return next(err);
+        }
+        else {
+            req.post.comments.push(commentWithId);
+            req.post.save(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                res.send(commentWithId)
+            })
+        }
+    });
 });
 //add post
 //up/down vote post
