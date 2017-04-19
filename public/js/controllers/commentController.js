@@ -1,4 +1,4 @@
-app.controller('CommentController', function($scope, $stateParams, postFactory, relevantPost) {
+app.controller('CommentController', function($scope, $stateParams, postFactory, relevantPost, authFactory) {
 
     $scope.post = relevantPost;
     console.log(relevantPost);
@@ -6,9 +6,9 @@ app.controller('CommentController', function($scope, $stateParams, postFactory, 
   $scope.addComment = function() {
 
           var newComment = {
-              author: "Julian",//replace with user
+              author:  authFactory.currentUser.username,
               body: $scope.body,
-              upvotes: 0,
+              upvotes: $scope.upvotes,
               post: $scope.post._id
           };
 
@@ -23,9 +23,15 @@ app.controller('CommentController', function($scope, $stateParams, postFactory, 
       };
 
 
-  $scope.upvote = function() {
-    //todo
-  }
+    $scope.upvote = function (comment) {
+        postFactory.upvote(comment).then(function () {
+          postFactory.getComments().then(function (comments) {
+           $scope.myData = comments;
+          });
+
+        });
+      };
+       
 
   $scope.downvote = function() {
     //todo

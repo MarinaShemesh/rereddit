@@ -10,4 +10,11 @@ app.controller('navController', function($scope, authFactory) {
   //     }
   //   })
   // } 
+
+  //   $scope.logout = function() {
+  //   authFactory.logout()
+  //     .then(function() {
+  //      $location.path('/login');
+  //       });
+  // }
 });

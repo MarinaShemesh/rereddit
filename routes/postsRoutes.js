@@ -18,29 +18,59 @@ router.param('postid', function(req, res, next, id) {
   });
 });
 
+var ensureAuthenticated = function(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    return res.send(401, { message: "Unauthorized" });
+  }
+};
+
 router.get('/', function (req, res, next) {//get the posts
   Post.find(function (error, posts) {
     if (error) {
       console.error(error)
       return next(error);
     } else {
+      console.log(posts)
       res.send(posts);
     }
   });
 });
 
-router.post('/', function(req, res, next) {//create the posts
-  Post.create(req.body, function(err, post) {
-    if (err) {
-      console.error(err)
+router.post('/', ensureAuthenticated, function(req, res, next) {//create the posts
+ 
+  var newPost = new Post(); //{text: , upvotes: , author: , comments }
+
+  newPost.text = req.body.text;
+  newPost.comments = req.body.comments;
+  newPost.upvotes = 0;
+  newPost.author = req.user;
+
+  newPost.save(function(err, post){
+    if(err){
       return next(err);
-    } else {
-      res.json(post);
     }
+    res.send(post)
   });
+
+
+//     Post.create(Object.assign({author: req.user.username}, req.body), function (err, post) {
+//         if (err) {
+//             console.error(err);
+//             return next(err);
+//         } else {
+//             console.log(post);
+//             res.send(post);
+//         }
+//     });
+// }); - from Karina
+
+
+  
 });
 
-router.put('/:postid', function(req, res, next) {//update/edit the posts
+router.put('/:postid', ensureAuthenticated, function(req, res, next) {//update/edit the posts
   Post.findByIdAndUpdate({ _id: req.params.id }, req.body, function(err, post) {
     if (err) {
       console.error(err)
@@ -51,8 +81,15 @@ router.put('/:postid', function(req, res, next) {//update/edit the posts
   });
 });
 
-router.put('/posts/:postid/upvote', function(req, res) {
+router.put('/:postid/upvote', ensureAuthenticated, function(req, res) {
   req.post.upvote();
+  req.post.save(function(err, post) {
+    res.send(post);
+  });
+});
+
+router.put('/:postid/downvote', ensureAuthenticated, function(req, res) {
+  req.post.downvote();
   req.post.save(function(err, post) {
     res.send(post);
   });
@@ -72,7 +109,7 @@ router.get('/:postid2', function (req, res, next) {
     })
   });
 
-router.delete('/:postid', function(req, res, next) {//this is from the database
+router.delete('/:postid',ensureAuthenticated, function(req, res, next) {//this is from the database
   req.post.remove(function(err, result) {
     if (err) {
       return next(err);
@@ -82,11 +119,9 @@ router.delete('/:postid', function(req, res, next) {//this is from the database
   });
 });
 
-router.post('/:postid/comment', function (req, res, next) {
+router.post('/:postid/comment', ensureAuthenticated, function (req, res, next) {
     let newComment = new Comment(req.body);
-    // newComment.post = req.post._id;
-    // console.log(newComment);
-    newComment.save(function (err, commentWithId) {
+     newComment.save(function (err, commentWithId) {
         if (err) {
             return next(err);
         }
@@ -101,6 +136,33 @@ router.post('/:postid/comment', function (req, res, next) {
         }
     });
 });
+
+router.param('commentId', function(req, res, next, id) {
+  Comment.findById(id, function(err, comment) {
+    if (err) {
+      return next(err);
+    } else if (!comment) {
+      return next(new Error('Comment does not exist'));
+    } else {
+      req.comment = comment;  //put the post on the request object for the next function in line to use
+      return next();
+    }
+  });
+});
+
+
+router.put('/:commentId/upvote', ensureAuthenticated, function(req, res, next) {//update/edit the posts
+  Comment.findByIdAndUpdate({ _id: req.params.id }, req.body, function(err, comment) {
+    if (err) {
+      console.error(err)
+      return next(err);
+    } else {
+      res.send(comment);
+    }
+  });
+});
+
+
 //add post
 //up/down vote post
 //get posts

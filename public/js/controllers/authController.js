@@ -1,4 +1,5 @@
 app.controller('AuthController', function($scope, authFactory, $state) {
+  
   $scope.register = function() {
     authFactory.register($scope.user)
     .then(function() {
@@ -16,4 +17,6 @@ app.controller('AuthController', function($scope, authFactory, $state) {
         alert(err.data);
       });
   }
+
+
 });

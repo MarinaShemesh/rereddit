@@ -1,16 +1,16 @@
 <div ng-repeat="post in myData | orderBy:'-upvotes' track by $index">
-    <span class="glyphicon glyphicon-thumbs-up" ng-click="upvote()"> </span>
-    <span class="glyphicon glyphicon-thumbs-down" ng-click="downvote()"> </span> {{post.upvotes}}
+    <span class="glyphicon glyphicon-thumbs-up" ng-click="upvote(post._id, post)"> </span>
+    <span class="glyphicon glyphicon-thumbs-down" ng-click="downvote(post._id, post)"> </span> {{post.upvotes}}
     <span class="post-text">
       {{post.text}} 
-    </span> - by {{post.author}}
+    </span> - by {{post.author.username}}
     <a ui-sref="comment({id: post._id})">comments</a>
     <a ng-click="deletePost(post)">Remove</a>
 </div>
-<form ng-submit="addPost()">
+<form ng-submit="addPost()" ng-show="currentUser.username">
     <h3>Add a new post</h3>
     <div class="form-group">
-        <input type="text" class="form-control" placeholder="Text" ng-model="text"></input>
+        <input type="text" class="form-control" placeholder="Text" ng-model="text" ></input>
     
     </div>
     <button type="submit" class="btn btn-danger">Post</button>

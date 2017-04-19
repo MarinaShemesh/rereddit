@@ -20,6 +20,36 @@ app.factory('postFactory', function($http) {
             })
     };
 
+
+     postFactory.upvote = function (postidToUpvote) {//edit the post
+             return $http.put('/reddit/'+ postidToUpvote + '/upvote', null)
+            .then(function (response) {
+                return response.data;
+            }, function (err) {
+                console.error(err)
+          });
+    };
+
+    postFactory.downvote = function (postidToDownvote) {//edit the post
+             return $http.put('/reddit/'+ postidToDownvote + '/downvote', null)
+            .then(function (response) {
+                return response.data;
+            }, function (err) {
+                console.error(err)
+            });
+    };
+
+    postFactory.getPosts = function () {
+           return $http.get('/reddit')
+          .then(function (response) {
+               return response.data
+               }, function (err) {
+                  console.error(err)
+              });
+   };
+
+
+
   return postFactory;
 });
 
